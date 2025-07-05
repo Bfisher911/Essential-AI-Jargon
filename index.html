@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Essential AI Jargon Cheat Sheet</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS for animations, tooltips, and layout -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes scaleUp {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* --- Modal Styles --- */
+        .modal-backdrop {
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-content {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            animation: scaleUp 0.3s ease-out forwards;
+        }
+        
+        /* --- Tooltip Styles --- */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            border-bottom: 2px dotted #60a5fa; /* Dotted underline for tooltip triggers */
+            cursor: help;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 220px;
+            background-color: #1f2937;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 10;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+
+        .tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1f2937 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* --- Scrollbar Styles --- */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #e0e7ff;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #6366f1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #4f46e5;
+        }
+        
+        /* --- Progress Bar --- */
+        #progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="antialiased text-slate-800">
+
+    <!-- Main Container -->
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-indigo-600">Essential AI Jargon</h1>
+            <p class="text-slate-600 mt-2">Your interactive guide to the world of Artificial Intelligence.</p>
+        </header>
+
+        <!-- Search and Progress Section -->
+        <div class="sticky top-0 z-10 bg-f0f4f8/80 backdrop-blur-sm py-4 mb-6">
+             <div class="relative mb-4">
+                <input type="text" id="search-bar" placeholder="Search for a term..." class="w-full p-4 pl-10 border border-slate-300 rounded-full shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                <svg class="w-6 h-6 text-slate-400 absolute top-1/2 left-3 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            
+            <!-- Progress Tracker -->
+            <div>
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-sm font-medium text-indigo-700">Exploration Progress</span>
+                    <span id="progress-text" class="text-sm font-medium text-indigo-700">0 / 12</span>
+                </div>
+                <div class="w-full bg-indigo-200 rounded-full h-2.5">
+                    <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jargon List -->
+        <main id="jargon-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Jargon terms will be dynamically inserted here by JavaScript -->
+        </main>
+
+    </div>
+
+    <!-- Modal/Popup for Definitions -->
+    <div id="modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <!-- Backdrop -->
+        <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-50"></div>
+        
+        <!-- Modal Content -->
+        <div id="modal-content" class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col relative transform opacity-0 scale-95">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-5 border-b border-slate-200">
+                <h2 id="modal-title" class="text-2xl font-bold text-indigo-700"></h2>
+                <button id="close-modal" class="text-slate-400 hover:text-slate-600 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="p-6 overflow-y-auto custom-scrollbar">
+                <!-- Definition -->
+                <div class="mb-6">
+                    <h3 class="font-semibold text-lg text-slate-800 mb-2">What it is:</h3>
+                    <p id="modal-definition" class="text-slate-600 leading-relaxed"></p>
+                </div>
+                
+                <!-- Analogy -->
+                <div>
+                    <h3 class="font-semibold text-lg text-slate-800 mb-2">Analogy:</h3>
+                    <p id="modal-analogy" class="text-slate-600 leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- DATA: AI Jargon Terms ---
+        // An array of objects, where each object represents an AI term.
+        // This makes the content easy to manage and update.
+        const aiTerms = [
+            {
+                term: "Neural Network",
+                definition: "A computing system inspired by the biological neural networks that constitute animal brains. It's composed of interconnected nodes or 'neurons' in layered structures that process information.",
+                analogy: "Think of it like a team of super-specialized employees. The first layer receives a task, does some initial work, and passes it to the next layer. Each subsequent layer refines the work until the final layer produces the complete result.",
+                explored: false,
+                definitionHtml: "A computing system inspired by the biological neural networks that constitute animal brains. It's composed of interconnected nodes or 'neurons' in layered structures that process information by adjusting the <span class='tooltip' data-tooltip='In a neural network, a weight controls the strength of the connection between two neurons.'><b>weights</b></span> of the connections."
+            },
+            {
+                term: "Machine Learning",
+                definition: "A subset of AI where algorithms are 'trained' on large datasets to find patterns and make predictions without being explicitly programmed for the task.",
+                analogy: "It's like teaching a child to recognize a cat. You don't list all the rules (pointy ears, whiskers, etc.). Instead, you show them many pictures of cats, and they eventually learn to identify one on their own.",
+                explored: false,
+                definitionHtml: "A subset of AI where algorithms are 'trained' on large datasets to find patterns and make predictions without being explicitly programmed for the task. This training process often involves minimizing a <span class='tooltip' data-tooltip='A function that measures how far the model’s prediction is from the correct answer.'><b>loss function</b></span>."
+            },
+            {
+                term: "Deep Learning",
+                definition: "A specialized form of machine learning that uses deep neural networks with many layers (hence 'deep') to analyze various factors of data. It's particularly powerful for complex tasks like image recognition.",
+                analogy: "If machine learning is teaching a child to recognize a cat, deep learning is like giving them a superpower to see the cat's individual hairs, the texture of its fur, and the reflection in its eyes, all at once.",
+                explored: false,
+                definitionHtml: "A specialized form of machine learning that uses deep neural networks with many layers (hence 'deep') to analyze various factors of data. It excels at learning from <span class='tooltip' data-tooltip='Data that hasn’t been pre-processed or organized in a predefined way, like raw images or text.'><b>unstructured data</b></span>."
+            },
+            {
+                term: "Generative AI",
+                definition: "A type of AI that can create new, original content, such as text, images, music, or code, based on the patterns it has learned from its training data.",
+                analogy: "Imagine a musician who has listened to thousands of jazz songs. Generative AI is like that musician composing a brand new jazz piece that sounds authentic but has never been heard before.",
+                explored: false,
+                definitionHtml: "A type of AI that can create new, original content. It learns a <span class='tooltip' data-tooltip='The underlying statistical patterns and structure of the training data.'><b>distribution</b></span> from data and then samples from it to generate new artifacts."
+            },
+            {
+                term: "LLM",
+                definition: "Large Language Model. A type of AI model trained on vast amounts of text data to understand and generate human-like language. Powers chatbots and content creation tools.",
+                analogy: "It's like an incredibly well-read librarian who has read almost every book in the world. They can answer questions, summarize complex topics, and even write new stories in the style of any author.",
+                explored: false,
+                definitionHtml: "Large Language Model. An AI model trained on vast text data. Its ability to generate coherent text comes from predicting the next word in a sequence, a process guided by <span class='tooltip' data-tooltip='A technique that allows the model to weigh the importance of different words in the input text when processing it.'><b>attention mechanisms</b></span>."
+            },
+            {
+                term: "Reinforcement Learning",
+                definition: "A type of machine learning where an AI 'agent' learns to make decisions by performing actions in an environment to achieve a goal. It learns from trial and error, rewarded for good actions and penalized for bad ones.",
+                analogy: "It's like training a dog. When it performs a trick correctly (like 'sit'), you give it a treat (a reward). When it does something wrong, it gets no treat. Over time, it learns the best actions to maximize treats.",
+                explored: false,
+                definitionHtml: "An AI 'agent' learns by performing actions to maximize a cumulative <span class='tooltip' data-tooltip='A signal that tells the AI agent how good its last action was.'><b>reward signal</b></span>. This is formalized as a Markov Decision Process."
+            },
+            {
+                term: "Natural Language Processing (NLP)",
+                definition: "A field of AI that focuses on enabling computers to understand, interpret, and generate human language. It's the technology behind translation services, sentiment analysis, and voice assistants.",
+                analogy: "NLP is the universal translator from Star Trek. It bridges the gap between human language (messy, contextual, and nuanced) and computer language (structured and logical).",
+                explored: false,
+                definitionHtml: "A field of AI enabling computers to understand human language. A key task is <span class='tooltip' data-tooltip='Breaking down text into smaller units, like words or sentences, for analysis.'><b>tokenization</b></span>, which prepares text for the model."
+            },
+            {
+                term: "Overfitting",
+                definition: "A problem in machine learning where a model learns the training data too well, including its noise and random fluctuations. This makes it perform poorly on new, unseen data.",
+                analogy: "Imagine a student who memorizes the exact answers to a practice test but doesn't understand the underlying concepts. They'll ace the practice test but fail the real exam, which has slightly different questions.",
+                explored: false,
+                definitionHtml: "A problem where a model learns the training data too well, including its <span class='tooltip' data-tooltip='Random, meaningless information in data that can mislead the model.'><b>noise</b></span>. It fails to <span class='tooltip' data-tooltip='The ability of a model to perform well on new, unseen data.'><b>generalize</b></span> to new data."
+            },
+            {
+                term: "Gradient Descent",
+                definition: "An optimization algorithm used to train machine learning models. It iteratively tweaks the model's parameters to minimize the difference between the model's predictions and the actual outcomes (the 'loss').",
+                analogy: "Imagine you're lost on a mountain in thick fog and want to get to the lowest valley. You can't see far, so you feel the ground around you and take a step in the steepest downhill direction. You repeat this until you can't go any lower.",
+                explored: false,
+                definitionHtml: "An optimization algorithm used to minimize a model's loss. It calculates the <span class='tooltip' data-tooltip='A vector that points in the direction of the steepest ascent of a function. Gradient descent moves in the opposite direction.'><b>gradient</b></span> of the loss function and updates the model's parameters accordingly."
+            },
+            {
+                term: "Computer Vision",
+                definition: "A field of AI that trains computers to interpret and understand the visual world. Using digital images from cameras and videos, models can identify and classify objects and then react to what they 'see'.",
+                analogy: "It's giving a computer a pair of eyes and a brain to understand what it's seeing. It can tell the difference between a car and a pedestrian, read a sign, or identify a specific person in a crowd.",
+                explored: false,
+                definitionHtml: "A field of AI that trains computers to interpret the visual world. A common technique is using <span class='tooltip' data-tooltip='A type of deep neural network designed specifically for processing pixel data in images.'><b>Convolutional Neural Networks (CNNs)</b></span>."
+            },
+            {
+                term: "Transformer Model",
+                definition: "A neural network architecture that relies on a mechanism called 'self-attention' to differentially weigh the importance of different parts of the input data. It is the foundation for most modern LLMs.",
+                analogy: "Think of it as an expert reader who, when reading a sentence, pays special attention to the most relevant words to understand the context. For 'The cat sat on the mat,' it knows 'cat' and 'mat' are more connected than 'The' and 'on'.",
+                explored: false,
+                definitionHtml: "A neural network architecture relying on <span class='tooltip' data-tooltip='A mechanism that allows the model to weigh the importance of different words in the input when processing a certain word.'><b>self-attention</b></span>. This allows for parallel processing of input, making it highly efficient."
+            },
+            {
+                term: "Bias",
+                definition: "A systematic error in an AI system that results in unfair outcomes, such as privileging one arbitrary group of users over others. Bias can be introduced by the data used to train the model or the design of the algorithm itself.",
+                analogy: "If you train a hiring AI by only showing it resumes of successful male candidates, it might learn to unfairly favor male applicants, even if gender isn't explicitly mentioned. The AI has inherited the bias from its training data.",
+                explored: false,
+                definitionHtml: "A systematic error in an AI system leading to unfair outcomes. This often stems from <span class='tooltip' data-tooltip='Training data that does not accurately represent the real world, leading to skewed results.'><b>unrepresentative training data</b></span> or flawed model assumptions."
+            }
+        ];
+
+        // --- DOM Elements ---
+        // Getting references to all the interactive elements we'll need.
+        const jargonList = document.getElementById('jargon-list');
+        const searchBar = document.getElementById('search-bar');
+        const modal = document.getElementById('modal');
+        const modalBackdrop = document.getElementById('modal-backdrop');
+        const closeModalBtn = document.getElementById('close-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDefinition = document.getElementById('modal-definition');
+        const modalAnalogy = document.getElementById('modal-analogy');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+
+        // --- Functions ---
+
+        /**
+         * Renders the list of AI terms on the page.
+         * Creates a card for each term and adds it to the DOM.
+         */
+        function renderTerms() {
+            jargonList.innerHTML = ''; // Clear the list first
+            aiTerms.forEach((item, index) => {
+                // Check if the term should be visible based on the search query
+                const searchTerm = searchBar.value.toLowerCase();
+                if (item.term.toLowerCase().includes(searchTerm)) {
+                    const termCard = document.createElement('div');
+                    termCard.className = `p-6 bg-white rounded-xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex justify-between items-center ${item.explored ? 'border-l-4 border-indigo-500' : ''}`;
+                    termCard.dataset.index = index; // Store the index to easily find the term data later
+
+                    termCard.innerHTML = `
+                        <h3 class="text-lg font-semibold text-slate-800">${item.term}</h3>
+                        ${item.explored ? '<svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' : ''}
+                    `;
+                    
+                    jargonList.appendChild(termCard);
+                }
+            });
+        }
+
+        /**
+         * Updates the progress bar and text based on how many terms have been explored.
+         */
+        function updateProgress() {
+            const exploredCount = aiTerms.filter(item => item.explored).length;
+            const totalCount = aiTerms.length;
+            const percentage = (exploredCount / totalCount) * 100;
+
+            progressBar.style.width = `${percentage}%`;
+            progressText.textContent = `${exploredCount} / ${totalCount}`;
+        }
+        
+        /**
+         * Opens the modal with the details of a specific term.
+         * @param {number} index - The index of the term in the aiTerms array.
+         */
+        function openModal(index) {
+            const termData = aiTerms[index];
+            
+            // Populate modal content
+            modalTitle.textContent = termData.term;
+            modalDefinition.innerHTML = termData.definitionHtml; // Use innerHTML to render tooltip spans
+            modalAnalogy.textContent = termData.analogy;
+
+            // Show the modal
+            modal.classList.remove('hidden');
+            
+            // Mark the term as explored if it's the first time seeing it
+            if (!termData.explored) {
+                termData.explored = true;
+                updateProgress();
+                renderTerms(); // Re-render to show the checkmark and border
+            }
+        }
+
+        /**
+         * Closes the modal.
+         */
+        function closeModal() {
+            modal.classList.add('hidden');
+        }
+
+        // --- Event Listeners ---
+
+        // 1. Search Bar: Filter terms as the user types.
+        searchBar.addEventListener('input', renderTerms);
+
+        // 2. Jargon List Clicks: Open the modal for the clicked term.
+        // We use event delegation on the parent list for efficiency.
+        jargonList.addEventListener('click', (event) => {
+            const card = event.target.closest('[data-index]');
+            if (card) {
+                const index = card.dataset.index;
+                openModal(index);
+            }
+        });
+
+        // 3. Close Modal: Listen for clicks on the close button and the backdrop.
+        closeModalBtn.addEventListener('click', closeModal);
+        modalBackdrop.addEventListener('click', closeModal);
+        
+        // 4. Keyboard support: Close modal with the Escape key.
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+
+        // --- Initial Setup ---
+        // When the script loads, render the initial list of terms and update the progress.
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTerms();
+            updateProgress();
+        });
+
+    </script>
+</body>
+</html>
